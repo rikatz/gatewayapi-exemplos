@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gateway-ns
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: user01
+  labels:
+    allow-routes: "yes"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: user02
+  labels:
+    allow-routes: "no"
+---

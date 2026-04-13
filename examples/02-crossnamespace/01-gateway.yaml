@@ -1,0 +1,40 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: gateway
+  namespace: gateway-ns
+spec:
+  gatewayClassName: kgateway
+  listeners:
+  - name: http
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: All
+  - name: https
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: certificate  
+  - name: https-user01
+    port: 443
+    protocol: HTTPS
+    hostname: "*.user01.com"
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: certificate
+        namespace: user01
+    allowedRoutes:
+      namespaces:
+        from: Same
+        # from: Selector
+        # selector:
+        #   matchLabels:
+        #     allow-routes: "yes"

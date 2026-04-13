@@ -1,0 +1,164 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo
+  namespace: user01
+spec:
+  selector:
+    app: echo
+  ports:
+  - name: echo
+    protocol: TCP
+    port: 3000
+    targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo
+  namespace: user01
+  labels:
+    app: echo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: echo
+  template:
+    metadata:
+      labels:
+        app: echo
+    spec:
+      containers:
+      - name: echo
+        image: registry.k8s.io/gateway-api/echo-basic:v1.5.1
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        resources:
+          requests:
+            cpu: 10m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo
+  namespace: user02
+spec:
+  selector:
+    app: echo
+  ports:
+  - name: echo
+    protocol: TCP
+    port: 3000
+    targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo
+  namespace: user02
+  labels:
+    app: echo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: echo
+  template:
+    metadata:
+      labels:
+        app: echo
+    spec:
+      containers:
+      - name: echo
+        image: registry.k8s.io/gateway-api/echo-basic:v1.5.1
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        resources:
+          requests:
+            cpu: 10m
+
+### Deployment for TLSRoute example
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tcp-backend
+  namespace: user02
+spec:
+  selector:
+    app: tcp-backend
+  ports:
+  - name: echo-tcp-plain
+    protocol: TCP
+    port: 3000
+    targetPort: 3000
+  - name: echo-tcp-tls
+    protocol: TCP
+    port: 8443
+    targetPort: 8443
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tcp-backend
+  namespace: user02
+  labels:
+    app: tcp-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tcp-backend
+  template:
+    metadata:
+      labels:
+        app: tcp-backend
+    spec:
+      containers:
+      - name: tcp-backend
+        image: registry.k8s.io/gateway-api/echo-basic:v1.5.1
+        resources:
+          requests:
+            cpu: 10m
+        volumeMounts:
+        - name: secret-volume
+          mountPath: /etc/secret-volume
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: TLS_SERVER_CERT
+          value: /etc/secret-volume/crt
+        - name: TLS_SERVER_PRIV_KEY
+          value: /etc/secret-volume/key
+        - name: TCP_ECHO_SERVER
+          value: "1"
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: cert-tlspassthrough
+          items:
+          - key: tls.crt
+            path: crt
+          - key: tls.key
+            path: key
