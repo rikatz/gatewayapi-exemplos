@@ -22,16 +22,4 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: certificate  
-  - name: https-user01
-    port: 443
-    protocol: HTTPS
-    hostname: "*.user01.com"
-    tls:
-      mode: Terminate
-      certificateRefs:
-      - name: certificate
-        namespace: user01
-    allowedRoutes:
-      namespaces:
-        from: Same
 
