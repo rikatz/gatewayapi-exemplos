@@ -1,0 +1,29 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: TLSRoute
+metadata:
+  name: echotls
+  namespace: user01
+spec:
+  parentRefs:
+  - name: gateway
+    namespace: gateway-ns
+  hostnames: ["user01.example.com"]
+  rules:
+  - backendRefs:
+    - name: tcp-backend
+      port: 8443
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: TLSRoute
+metadata:
+  name: echotls
+  namespace: user02
+spec:
+  parentRefs:
+  - name: gateway
+    namespace: gateway-ns
+  hostnames: ["user02.example.com"]
+  rules:
+  - backendRefs:
+    - name: tcp-backend
+      port: 8443

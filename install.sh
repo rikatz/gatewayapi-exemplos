@@ -103,7 +103,14 @@ openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -nodes \
 
 kubectl create secret tls -n user01 certificate --cert keys/user01-tls.crt --key keys/user01-tls.key
 
-# Generate the certificate for TLSRoute
+# Generate the certificate for TLSRoute user01
+openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -nodes \
+  -keyout keys/user01-tls.key -out keys/user01-tls.crt -subj "/CN=tls.user01.com" \
+  -addext "subjectAltName=DNS:tls.user01.com"
+
+kubectl create secret tls -n user01 cert-tlspassthrough --cert keys/user01-tls.crt --key keys/user01-tls.key
+
+# Generate the certificate for TLSRoute user02
 openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -nodes \
   -keyout keys/user02-tls.key -out keys/user02-tls.crt -subj "/CN=tls.user02.com" \
   -addext "subjectAltName=DNS:tls.user02.com"

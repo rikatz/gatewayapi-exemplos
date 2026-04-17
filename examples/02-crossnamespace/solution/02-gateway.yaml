@@ -33,5 +33,7 @@ spec:
         namespace: user01
     allowedRoutes:
       namespaces:
-        from: Same
-
+        from: Selector
+        selector:
+          matchLabels:
+            allow-routes: "yes"

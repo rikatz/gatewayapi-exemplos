@@ -1,0 +1,14 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: ReferenceGrant
+metadata:
+  name: route-to-service
+  namespace: user02
+spec:
+  from:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    namespace: user01
+  to:
+  - group: ""
+    kind: Service
+    name: echo

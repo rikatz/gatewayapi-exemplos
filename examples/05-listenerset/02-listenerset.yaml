@@ -1,0 +1,16 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: ListenerSet
+metadata:
+  name: workload-listeners
+  namespace: user01
+spec:
+  parentRef:
+    name: gateway
+    namespace: gateway-ns
+    kind: Gateway
+    group: gateway.networking.k8s.io
+  listeners:
+  - name: first
+    hostname: user01.example.com
+    protocol: HTTP
+    port: 80
